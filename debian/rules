@@ -1,0 +1,43 @@
+#! /usr/bin/make -f
+
+include /usr/share/dpkg/architecture.mk
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all, optimize=+lto
+
+export DEB_CFLAGS_MAINT_APPEND += -fvisibility=hidden -fvisibility-inlines-hidden
+export DEB_CXXFLAGS_MAINT_APPEND += -fvisibility=hidden -fvisibility-inlines-hidden
+
+# Build with NDEBUG (i.e. no debug messages) unless noopt build was requested
+ifeq (,$(filter noopt,$(DEB_BUILD_OPTIONS)))
+    export DEB_CFLAGS_MAINT_APPEND += -DNDEBUG
+    export DEB_CXXFLAGS_MAINT_APPEND += -DNDEBUG
+endif
+
+DH_AUTO_ARGS = --buildsystem=cmake --builddirectory=builddir
+
+override_dh_auto_configure:
+	dh_auto_configure $(DH_AUTO_ARGS) -- \
+		-DCMAKE_USE_RELATIVE_PATHS=ON -DWITH_ASF=ON -DWITH_MP4=ON \
+		-DBUILD_SHARED_LIBS=ON \
+		-DBUILD_TESTING=ON \
+		-DVISIBILITY_HIDDEN=ON \
+		$(NULL)
+
+override_dh_installchangelogs:
+	dh_installchangelogs CHANGELOG.md
+
+override_dh_installdocs:
+	dh_installdocs -X '*.md5'
+
+# Generate docs when building indep
+execute_after_dh_auto_build-indep:
+	# build-indep gets invoked in buildds as well...
+	if [ -x /usr/bin/doxygen ]; then \
+	    dh_auto_build --buildsystem=makefile --builddirectory=builddir -- docs; \
+	    rm builddir/doc/html/jquery.js; \
+	    ln -s /usr/share/javascript/jquery/jquery.js builddir/doc/html; \
+	fi
+
+# All-in-one default dh rule
+%:
+	dh $@ $(DH_AUTO_ARGS)

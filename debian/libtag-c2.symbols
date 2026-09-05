@@ -1,0 +1,60 @@
+# SymbolsHelper-Confirmed: 2.0 arm64 armel armhf hppa hurd-i386 i386 m68k mips64el powerpc ppc64 ppc64el riscv64 s390x sh4 sparc64 x32
+libtag_c.so.2 libtag-c2 #MINVER#
+ (arch=armel riscv64)_ZTIN9__gnu_cxx7__mutexE@Base 2.0
+ (arch=armel riscv64)_ZTISt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE1EE@Base 2.0
+ (arch=!armel !riscv64)_ZTISt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 2.0
+ (arch=armel riscv64)_ZTISt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE1EE@Base 2.0
+ (arch=!armel !riscv64)_ZTISt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 2.0
+ (arch=armel armhf)_ZTISt19_Sp_make_shared_tag@Base 2.0
+ (arch=armel riscv64)_ZTSN9__gnu_cxx7__mutexE@Base 2.0
+ (arch=armel riscv64)_ZTSSt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE1EE@Base 2.0
+ (arch=!armel !riscv64)_ZTSSt11_Mutex_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 2.0
+ (arch=armel riscv64)_ZTSSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE1EE@Base 2.0
+ (arch=!armel !riscv64)_ZTSSt16_Sp_counted_baseILN9__gnu_cxx12_Lock_policyE2EE@Base 2.0
+ _ZTSSt19_Sp_make_shared_tag@Base 2.0
+ _ZZNSt19_Sp_make_shared_tag5_S_tiEvE5__tag@Base 2.0
+ taglib_audioproperties_bitrate@Base 2.0
+ taglib_audioproperties_channels@Base 2.0
+ taglib_audioproperties_length@Base 2.0
+ taglib_audioproperties_samplerate@Base 2.0
+ taglib_complex_property_free@Base 2.0
+ taglib_complex_property_free_keys@Base 2.0
+ taglib_complex_property_get@Base 2.0
+ taglib_complex_property_keys@Base 2.0
+ taglib_complex_property_set@Base 2.0
+ taglib_complex_property_set_append@Base 2.0
+ taglib_file_audioproperties@Base 2.0
+ taglib_file_free@Base 2.0
+ taglib_file_is_valid@Base 2.0
+ taglib_file_new@Base 2.0
+ taglib_file_new_iostream@Base 2.0
+ taglib_file_new_type@Base 2.0
+ taglib_file_save@Base 2.0
+ taglib_file_tag@Base 2.0
+ taglib_free@Base 2.0
+ taglib_id3v2_set_default_text_encoding@Base 2.0
+ taglib_iostream_free@Base 2.0
+ taglib_memory_iostream_new@Base 2.0
+ taglib_picture_from_complex_property@Base 2.0
+ taglib_property_free@Base 2.0
+ taglib_property_get@Base 2.0
+ taglib_property_keys@Base 2.0
+ taglib_property_set@Base 2.0
+ taglib_property_set_append@Base 2.0
+ taglib_set_string_management_enabled@Base 2.0
+ taglib_set_strings_unicode@Base 2.0
+ taglib_tag_album@Base 2.0
+ taglib_tag_artist@Base 2.0
+ taglib_tag_comment@Base 2.0
+ taglib_tag_free_strings@Base 2.0
+ taglib_tag_genre@Base 2.0
+ taglib_tag_set_album@Base 2.0
+ taglib_tag_set_artist@Base 2.0
+ taglib_tag_set_comment@Base 2.0
+ taglib_tag_set_genre@Base 2.0
+ taglib_tag_set_title@Base 2.0
+ taglib_tag_set_track@Base 2.0
+ taglib_tag_set_year@Base 2.0
+ taglib_tag_title@Base 2.0
+ taglib_tag_track@Base 2.0
+ taglib_tag_year@Base 2.0

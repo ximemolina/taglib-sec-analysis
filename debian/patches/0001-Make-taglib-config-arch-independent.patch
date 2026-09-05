@@ -1,0 +1,24 @@
+From: Boyuan Yang <byang@debian.org>
+Date: Sat, 27 Jan 2024 19:25:24 -0500
+Subject: Make taglib-config arch-independent
+
+---
+ taglib-config.cmake | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/taglib-config.cmake b/taglib-config.cmake
+index c2539fb..2a36dfa 100644
+--- a/taglib-config.cmake
++++ b/taglib-config.cmake
+@@ -24,9 +24,9 @@ else
+   includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+ fi
+ if test -z "$exec_prefix"; then
+-  libdir=@CMAKE_INSTALL_FULL_LIBDIR@
++  libdir=/usr/lib/$(dpkg-architecture -q DEB_HOST_MULTIARCH)
+ else
+-  libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
++  libdir=${exec_prefix}/lib/$(dpkg-architecture -q DEB_HOST_MULTIARCH)
+ fi
+ 
+ flags=""
