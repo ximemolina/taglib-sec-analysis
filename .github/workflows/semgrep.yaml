@@ -18,7 +18,7 @@ jobs:
       image: semgrep/semgrep
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Run Semgrep
         run: semgrep scan --config p/default --config p/security-audit --sarif --output semgrep-results.sarif
