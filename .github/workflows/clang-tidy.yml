@@ -13,11 +13,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang-tidy cmake ninja-build
+          sudo apt-get install -y clang-tidy cmake ninja-build zlib1g-dev libutfcpp-dev
 
       - name: Configure CMake (generate compile_commands.json)
         run: |
@@ -27,22 +29,7 @@ jobs:
 
       - name: Run clang-tidy
         run: |
-          # Run clang-tidy on every source file in the repo, using the
-          # compile_commands.json generated above. Uses the project's
-          # .clang-tidy config file if present. Excludes the build dir
-          # and any third_party/external/vendor code.
-          find . \
-            -path ./build -prune -o \
-            -path '*/third_party/*' -prune -o \
-            -path '*/external/*' -prune -o \
-            -path '*/vendor/*' -prune -o \
-            -regex '.*\.\(cpp\|cc\|cxx\|h\|hpp\)' -print \
-            | xargs -P "$(nproc)" -I{} clang-tidy -p build --quiet {}
-
-      # Optional: fail the build only on new warnings vs. main branch,
-      # rather than every existing warning. Uncomment if useful.
-      # - name: Run clang-tidy-diff against main
-      #   run: |
-      #     git fetch origin main
-      #     git diff -U0 origin/main...HEAD -- '*.cpp' '*.h' \
-      #       | clang-tidy-diff.py -p1 -path build
+          test -f build/compile_commands.json
+          # run-clang-tidy only analyzes translation units listed in
+          # compile_commands.json (not headers/tests/examples outside the DB).
+          run-clang-tidy -p build -j "$(nproc)" -quiet
