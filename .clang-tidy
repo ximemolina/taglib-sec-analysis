@@ -1,0 +1,14 @@
+---
+Checks: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  bugprone-*,
+  cert-*,
+  security-*,
+  -clang-diagnostic-sign-conversion,
+  -clang-diagnostic-implicit-int-conversion,
+  -clang-diagnostic-implicit-int-float-conversion,
+  -clang-diagnostic-shorten-64-to-32
+WarningsAsErrors: ''
+HeaderFilterRegex: 'taglib/(ogg|asf|dsdiff|it|s3m|mod)/'
+FormatStyle: none

@@ -30,6 +30,7 @@ jobs:
       - name: Run clang-tidy
         run: |
           test -f build/compile_commands.json
-          # run-clang-tidy only analyzes translation units listed in
-          # compile_commands.json (not headers/tests/examples outside the DB).
-          run-clang-tidy -p build -j "$(nproc)" -quiet
+          # Only the parsers under review. Checks come from .clang-tidy
+          # (analyzer, bugprone, cert, security — not signedness noise).
+          run-clang-tidy -p build -j "$(nproc)" -quiet \
+            'taglib/(ogg/oggpageheader|ogg/xiphcomment|asf/asffile|dsdiff/dsdifffile|it/itfile|s3m/s3mfile|mod/modfile)\.cpp$'
