@@ -39,12 +39,15 @@ jobs:
             taglib/mod/modfile.cpp \
             2> cppcheck-results.xml
 
-      - name: Show Cppcheck results
+      - name: Verify results file
         run: |
+          ls -la
+          test -f cppcheck-results.xml
           cat cppcheck-results.xml
 
       - name: Upload Cppcheck results
         uses: actions/upload-artifact@v4
         with:
           name: cppcheck-results
+          path: ./cppcheck-results.xml
 
