@@ -3,7 +3,7 @@ name: cppcheck
 
 on:
   push:
-    branches: [ main ]
+    branches: [ cppcheck-analysis ]
   pull_request:
     branches: [ main ]
 
