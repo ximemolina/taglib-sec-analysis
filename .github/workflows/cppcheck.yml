@@ -1,0 +1,44 @@
+```yaml
+name: cppcheck
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  cppcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Cppcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cppcheck
+
+      - name: Run Cppcheck
+        run: |
+          cppcheck \
+            --enable=all \
+            --inconclusive \
+            --xml \
+            --xml-version=2 \
+            taglib/ogg/oggpageheader.cpp \
+            taglib/ogg/xiphcomment.cpp \
+            taglib/asf/asffile.cpp \
+            taglib/dsdiff/dsdifffile.cpp \
+            taglib/it/itfile.cpp \
+            taglib/s3m/s3mfile.cpp \
+            taglib/mod/modfile.cpp \
+            2> cppcheck-results.xml
+
+      - name: Show Cppcheck results
+        run: |
+          cat cppcheck-results.xml
+```
