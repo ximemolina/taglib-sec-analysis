@@ -1,4 +1,3 @@
-
 name: cppcheck
 
 on:
@@ -40,15 +39,42 @@ jobs:
             taglib/mod/modfile.cpp \
             2> cppcheck-results.xml
 
-      - name: Verify results file
+      - name: Generate summary
         run: |
-          ls -la
-          test -f cppcheck-results.xml
-          cat cppcheck-results.xml
+          python3 <<'PY'
+          import xml.etree.ElementTree as ET
+          import os
+
+          root = ET.parse("cppcheck-results.xml").getroot()
+          errors = root.findall(".//error")
+
+          summary = os.environ["GITHUB_STEP_SUMMARY"]
+
+          with open(summary, "a", encoding="utf-8") as f:
+              f.write("# Cppcheck Results\n\n")
+              f.write(f"**Total findings:** {len(errors)}\n\n")
+
+              if not errors:
+                  f.write("No findings were reported.\n")
+              else:
+                  f.write("| File | Line | Severity | CWE | Message |\n")
+                  f.write("|---|---:|---|---|---|\n")
+
+                  for error in errors:
+                      file_path = error.get("file", "")
+                      line = error.get("line", "")
+                      severity = error.get("severity", "")
+                      cwe = error.get("cwe", "")
+                      message = error.get("msg", "")
+
+                      f.write(
+                          f"| `{file_path}` | {line} | {severity} | "
+                          f"{cwe or '-'} | {message} |\n"
+                      )
+          PY
 
       - name: Upload Cppcheck results
         uses: actions/upload-artifact@v4
         with:
           name: cppcheck-results
           path: ./cppcheck-results.xml
-
