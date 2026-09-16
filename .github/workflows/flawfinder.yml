@@ -1,0 +1,77 @@
+name: Flawfinder SAST
+
+on:
+  push:
+    branches:
+      - cppcheck-analysis
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  flawfinder:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Flawfinder
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install flawfinder
+
+      - name: Run Flawfinder
+        run: |
+          flawfinder \
+            taglib/ogg/oggpageheader.cpp \
+            taglib/ogg/xiphcomment.cpp \
+            taglib/asf/asffile.cpp \
+            taglib/dsdiff/dsdifffile.cpp \
+            taglib/it/itfile.cpp \
+            taglib/s3m/s3mfile.cpp \
+            taglib/mod/modfile.cpp \
+            --csv > flawfinder-results.csv
+
+      - name: Generate GitHub Actions summary
+        run: |
+          python3 <<'PY'
+          import csv
+          import os
+
+          input_file = "flawfinder-results.csv"
+          summary_file = os.environ["GITHUB_STEP_SUMMARY"]
+
+          with open(input_file, newline="", encoding="utf-8") as f:
+              rows = list(csv.DictReader(f))
+
+          with open(summary_file, "a", encoding="utf-8") as out:
+              out.write("# Flawfinder SAST Results\n\n")
+              out.write(f"**Total findings:** {len(rows)}\n\n")
+
+              if not rows:
+                  out.write("No findings were reported.\n")
+              else:
+                  out.write("| File | Line | Risk | CWE | Warning |\n")
+                  out.write("|---|---:|---:|---|---|\n")
+
+                  for row in rows:
+                      file = row.get("File", "")
+                      line = row.get("Line", "")
+                      risk = row.get("Risk", "")
+                      cwe = row.get("CWE", "")
+                      warning = row.get("Warning", "")
+
+                      out.write(
+                          f"| `{file}` | {line} | {risk} | "
+                          f"{cwe or '-'} | {warning} |\n"
+                      )
+          PY
+
+      - name: Upload Flawfinder results
+        uses: actions/upload-artifact@v4
+        with:
+          name: flawfinder-results
+          path: flawfinder-results.csv
