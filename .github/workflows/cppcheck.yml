@@ -21,69 +21,45 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cppcheck cmake g++
+          sudo apt-get install -y cppcheck cmake g++ zlib1g-dev libcppunit-dev
 
       - name: Configure CMake
         run: |
           cmake -S . -B build \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-
-      - name: Create compilation database for selected files
-        run: |
-          python3 <<'PY'
-          import json
-
-          selected = {
-              "oggpageheader.cpp",
-              "xiphcomment.cpp",
-              "asffile.cpp",
-              "dsdifffile.cpp",
-              "itfile.cpp",
-              "s3mfile.cpp",
-              "modfile.cpp"
-          }
-
-          with open("build/compile_commands.json", encoding="utf-8") as f:
-              commands = json.load(f)
-
-          filtered = [
-              entry for entry in commands
-              if any(entry["file"].endswith(name) for name in selected)
-          ]
-
-          with open(
-              "build/compile_commands-7files.json",
-              "w",
-              encoding="utf-8"
-          ) as f:
-              json.dump(filtered, f, indent=2)
-
-          print(f"Selected compilation commands: {len(filtered)}")
-
-          for entry in filtered:
-              print(entry["file"])
-
-          if len(filtered) != 7:
-              raise RuntimeError(
-                  f"Expected 7 files, but found {len(filtered)}"
-              )
-          PY
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DBUILD_TESTING=ON \
+            -DBUILD_EXAMPLES=ON
 
       - name: Check Cppcheck configuration
         run: |
           cppcheck \
-            --project=build/compile_commands-7files.json \
-            --check-config
+            --project=build/compile_commands.json \
+            --library=std,posix,gnu \
+            --platform=unix64 \
+            --check-config 2>&1 | tee check-config.log
+          # Falla el job si hay configuraciones faltantes críticas
+          if grep -q "Cppcheck cannot find all the include files" check-config.log; then
+            echo "::warning::Hay includes sin resolver, revisar check-config.log"
+          fi
 
-      - name: Run Cppcheck
+      - name: Run Cppcheck (full project, all checkers)
         run: |
           cppcheck \
-            --project=build/compile_commands-7files.json \
+            --project=build/compile_commands.json \
+            --library=std,posix,gnu \
+            --platform=unix64 \
             --enable=all \
             --inconclusive \
-            --xml \
-            --xml-version=2 \
+            --check-level=exhaustive \
+            --std=c++17 \
+            --checkers-report=checkers-report.txt \
+            --xml --xml-version=2 \
             2> cppcheck-results.xml
+
+      - name: Show checker activation rate
+        run: |
+          tail -n 5 checkers-report.txt
+          grep "Active checkers" cppcheck-results.xml || true
 
       - name: Generate summary
         run: |
@@ -107,8 +83,9 @@ jobs:
                   f.write("|---|---:|---|---|---|\n")
 
                   for error in errors:
-                      file_path = error.get("file", "")
-                      line = error.get("line", "")
+                      loc = error.find("location")
+                      file_path = loc.get("file", "") if loc is not None else ""
+                      line = loc.get("line", "") if loc is not None else ""
                       severity = error.get("severity", "")
                       cwe = error.get("cwe", "")
                       message = error.get("msg", "")
@@ -123,4 +100,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cppcheck-results
-          path: ./cppcheck-results.xml
+          path: |
+            ./cppcheck-results.xml
+            ./checkers-report.txt
